@@ -21,7 +21,7 @@ class Server {
     this.app.use(cors())
     this.app.use(express.json())
 
-    this.app.use(express.static('src/public'))  
+    this.app.use(express.static('./public'))  
   }
   routes() {
     this.app.use(this.userEndpoitPath, userRouter);
