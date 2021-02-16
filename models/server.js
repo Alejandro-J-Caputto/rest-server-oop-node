@@ -19,16 +19,14 @@ class Server {
 
   middlewares() {
     this.app.use(cors())
-    // server.app.use(express.static(__dirname + '/public'))
+    this.app.use(express.json())
+
     this.app.use(express.static('src/public'))  
   }
   routes() {
     this.app.use(this.userEndpoitPath, userRouter);
 
     this.app.all('*',(req,res,next) => {
-      // const err = new Error(`Can't find ${req.originalUrl} on this server`);
-      // err.status = 'fail';
-      // err.statusCode = 404;
       next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
     })
   }

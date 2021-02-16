@@ -1,5 +1,10 @@
+const {request, response} = require('express');
 
- exports.getUsers = (req, res) => {
+
+ exports.getUsers = (req = request, res = response) => {
+
+  const query = req.query;
+  console.log(query)
 
   res.status(200).json({
     status: 'success',
@@ -7,14 +12,16 @@
   })
 }
  exports.createUser = (req, res) => {
-
-  res.status(200).json({
+  const body = req;
+  console.log(body)
+  res.status(201).json({
     status: 'success',
-    message: 'Hello getUsers'
+    body
   })
 }
  exports.getUserById = (req, res) => {
-
+  const userId = req.params.id;
+  console.log(userId)
   res.status(200).json({
     status: 'success',
     message: 'Hello getUsers'
