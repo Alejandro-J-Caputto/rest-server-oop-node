@@ -4,6 +4,7 @@ const cors = require('cors')
 const AppError = require('../utils/appError');
 
 const userRouter = require('../routes/userRoutes');
+const { dbConnection } = require('../database/config');
 
 class Server {
 
@@ -11,12 +12,12 @@ class Server {
     this.app = express();
     this.port = process.env.PORT;
     this.userEndpoitPath = '/api/v1/users';
+    this.conectarDB(process.env.ENVIROMENT_NOW);
     this.middlewares();
     this.routes();
     this.listen();
     this.errorHandlingMiddleware();
   }
-
   middlewares() {
     this.app.use(cors())
     this.app.use(express.json())
@@ -35,6 +36,9 @@ class Server {
       console.log(this.port)
       console.log('Server running on port', this.port)
     })
+  }
+  async conectarDB(env) {
+    await dbConnection(env);
   }
   errorHandlingMiddleware() {
     this.app.use((err, req, res, next) => {
