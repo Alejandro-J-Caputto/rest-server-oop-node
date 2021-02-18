@@ -42,10 +42,14 @@ class Server {
   }
   errorHandlingMiddleware() {
     this.app.use((err, req, res, next) => {
-      console.log(err.stack)
-      err.statusCode = err.statusCodde || 500;
+      err.statusCode = err.statusCode || 500;
       err.status = err.status || 'error';
+      if(process.env.ENVIROMENT_NOW === 'development') {
+        
+      
+      }
       res.status(err.statusCode).json({
+        // err: {...err, [err.message]:err.message},
         status: err.status,
         message: err.message
       })

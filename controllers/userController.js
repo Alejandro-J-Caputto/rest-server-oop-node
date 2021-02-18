@@ -1,34 +1,57 @@
 const {request, response} = require('express');
+const bcrypt = require('bcryptjs');
 const User = require('../models/usuario');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
- exports.getUsers = (req = request, res = response) => {
 
-  const query = req.query;
-  console.log(query)
+
+
+
+ exports.getUsers = async (req = request, res = response) => {
+
+
+  // const query = req.query;
+  // console.log(query)
+  const { limit = 5, from = 0 } = req.query;
+  const users = User.find({active: {$ne : false}}).limit(+limit).skip(+from)
+  const total = User.countDocuments();
+
+  const [usersAll, totalCount] = await Promise.all([
+    users,
+    total
+
+  ])
+  res.status(200).json({
+    status: 'success',
+    usersAll,
+    totalCount
+  })
+
+}
+
+
+exports.createUser = catchAsync(async(req, res ,next) => {
+  let { name, email, password } = req.body;
+  const newUser = new User({name, email, password});
+  
+  //ENCRIPTA PASSWORD 
+  const salt = bcrypt.genSaltSync();
+  newUser.password = bcrypt.hashSync( password, salt);
+
+  //CREATE DOCUMENT IN THE DB
+  // await newUser.save();
+  await newUser.save();
 
   res.status(200).json({
     status: 'success',
-    message: 'Hello getUsers'
-  })
-}
- exports.createUser = async (req, res) => {
-  const { body } = req;
-  
-  const newUser = await User.create({
-    name: body.name,
-    email: body.email,
-    password: body.password,
-    passwordConfirm: body.passwordConfirm
+    message: 'user succesfully created'
   })
 
-  console.log(body)
-  res.status(201).json({
-    status: 'success',
-    data: {
-      newUser
-    }
-  })
-}
+
+
+})
+
  exports.getUserById = (req, res) => {
   const userId = req.params.id;
   console.log(userId)
@@ -37,18 +60,31 @@ const User = require('../models/usuario');
     message: 'Hello getUsers'
   })
 }
- exports.deleteUser = (req, res) => {
+ exports.deleteUser = async (req, res) => {
+
+  const changeStatus = await User.findByIdAndUpdate(req.params.id, {active : false}, {
+    new: true,
+    runValidators: true
+  })
 
   res.status(200).json({
     status: 'success',
-    message: 'Hello getUsers'
+    message: 'User have been deleted',
+    changeStatus
   })
 }
- exports.editUser = (req, res) => {
+ exports.editUser = async (req, res) => {
+
+  const {id} = req.params;
+  const {password, google, email, ...rest} = req.body;
+  const updateTour = await User.findByIdAndUpdate(id, rest, {
+    new: true,
+    runValidators: true
+  })
 
   res.status(200).json({
     status: 'success',
-    message: 'Hello getUsers'
+    updateTour
   })
 }
 
