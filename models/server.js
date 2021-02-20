@@ -25,7 +25,7 @@ class Server {
     this.conectarDB(process.env.ENVIROMENT_NOW);
     this.middlewares();
     this.routes();
-    this.listen();
+    // this.listen();
     this.errorHandlingMiddleware();
   }
   middlewares() {
@@ -35,11 +35,12 @@ class Server {
     this.app.use(express.static('./public'))  
   }
   routes() {
-    this.app.use(this.pathsEndpoints.users, authRouter);
-    this.app.use(this.pathsEndpoints.searchDoc, searchRouter);
-    this.app.use(this.pathsEndpoints.authorization, userRouter);
+    console.log('patata')
+    this.app.use(this.pathsEndpoints.users, userRouter);
+    this.app.use(this.pathsEndpoints.authorization, authRouter);
     this.app.use(this.pathsEndpoints.categories, categoriesRouter);
     this.app.use(this.pathsEndpoints.products, productsRouter);
+    this.app.use(this.pathsEndpoints.searchDoc, searchRouter);
 
     this.app.all('*',(req,res,next) => {
       next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
