@@ -10,6 +10,8 @@ const {
 } = require('../controllers/userController');
 //USANDO MIS MIDDLEWARES TO VALIDATE
 const { emailExist, checkPassword, checkIdExists, validarCampos } = require('../middlewares/customValidators');
+const { validateJWT } = require('../middlewares/validate-jwt');
+const { restrictTo } = require('../middlewares/verifyRol');
 
 const router = express.Router()
 
@@ -19,7 +21,7 @@ router.route('/')
   .post(checkPassword, emailExist, createUser);
 router.route('/:id')
   .get(getUserById)
-  .delete(deleteUser)
+  .delete(validateJWT,restrictTo('ADMIN'), deleteUser)
   .put(check('id', 'No es un ID valido').isMongoId(), validarCampos ,editUser)
 
 

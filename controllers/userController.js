@@ -4,15 +4,7 @@ const User = require('../models/usuario');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-
-
-
-
  exports.getUsers = async (req = request, res = response) => {
-
-
-  // const query = req.query;
-  // console.log(query)
   const { limit = 5, from = 0 } = req.query;
   const users = User.find({active: {$ne : false}}).limit(+limit).skip(+from)
   const total = User.countDocuments();
@@ -47,11 +39,7 @@ exports.createUser = catchAsync(async(req, res ,next) => {
     status: 'success',
     message: 'user succesfully created'
   })
-
-
-
 })
-
  exports.getUserById = (req, res) => {
   const userId = req.params.id;
   console.log(userId)
@@ -70,7 +58,8 @@ exports.createUser = catchAsync(async(req, res ,next) => {
   res.status(200).json({
     status: 'success',
     message: 'User have been deleted',
-    changeStatus
+    changeStatus,
+    uid : req.uid
   })
 }
  exports.editUser = async (req, res) => {

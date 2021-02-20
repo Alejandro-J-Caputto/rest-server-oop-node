@@ -13,10 +13,11 @@ exports.emailExist = async( req, res , next) => {
     return next(new AppError('There is already an account with the provided email', 400));
   }
   next();
-
+  
 }
 
 exports.checkPassword = (req, res ,next) => {
+
   let {password, passwordConfirm} = req.body;
 
   if(password === passwordConfirm) {

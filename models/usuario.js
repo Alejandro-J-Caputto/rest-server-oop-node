@@ -1,10 +1,12 @@
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
-const {Schema, model} = require('mongoose');
+const {Schema, model, mongo} = require('mongoose');
 
 const UserSchema = Schema({
-
+  id: {
+    type: mongo.ObjectID
+  },
   name: {
     type: String,
     required: [true, 'The name is required'],
@@ -42,7 +44,7 @@ const UserSchema = Schema({
   active: {
     type: Boolean,
     default: true,
-    select: false
+    select: true
   },
   google: {
     type: Boolean,
@@ -50,6 +52,12 @@ const UserSchema = Schema({
   }
 
 });
+UserSchema.methods.toJSON = function () {
+  const {__v, password, _id, ...user} = this.toObject();
+  user.uid = _id;
+  return user;
+}
+const User = model('User', UserSchema);
 // UserSchema.pre('save', async function(next) {
 
 //   if(!this.isModified('password')) return next();
@@ -60,6 +68,4 @@ const UserSchema = Schema({
 //   next();
 // })
 
-
-const User = model('User', UserSchema);
 module.exports = User;
