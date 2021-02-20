@@ -1,6 +1,7 @@
 const User = require("../models/usuario");
 const AppError = require("../utils/appError");
 const { validationResult } = require('express-validator');
+const { Category } = require("../models");
 
 
 
@@ -28,19 +29,18 @@ exports.checkPassword = (req, res ,next) => {
 }
 
 
-exports.checkIdExists = async (req, res ,next) => {
+exports.checkIdExists = (model) => {
+ return async (req, res, next) => {
+  console.log(model)
+    const {id} = req.params;
+    console.log(id)
 
-  const {id} = req.params;
-  console.log(id)
-  const user =  User.findById(req.params.id);
-  const document = await user;
-
-  console.log(document);
-
-  if(!user) return next(new AppError('There is not an user with that ID', 400));
-
-  next();
-}
+    const documentID = await model.findById({_id: id});
+    if(!documentID) return next(new AppError('This ID doent exist on the DB', 400));
+  
+    next();
+  }
+ }
 
 
 exports.validarCampos = ( req, res, next ) => {
@@ -52,4 +52,18 @@ exports.validarCampos = ( req, res, next ) => {
   }
 
   next();
+}
+
+exports.checkParamCategory = async (req, res , next) => {
+
+  const {categorie} = req.params;
+  if(categorie) {
+
+    const checkCategorieParam = await Category.findOne({name: categorie.toUpperCase()});
+    if(!checkCategorieParam || checkCategorieParam === null) {
+      return next (new AppError('This category doesn\'t exist'))
+    }
+  }
+  next();
+
 }

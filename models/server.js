@@ -1,10 +1,13 @@
-const path = require('path');
 const express = require('express');
 const cors = require('cors')
 const AppError = require('../utils/appError');
 
 const userRouter = require('../routes/userRoutes');
 const authRouter = require('../routes/authRoutes');
+const categoriesRouter = require('../routes/categoryRoutes');
+const productsRouter = require('../routes/productRoutes');
+const searchRouter = require('../routes/searchRoute');
+
 const { dbConnection } = require('../database/config');
 
 class Server {
@@ -12,8 +15,13 @@ class Server {
   constructor(){
     this.app = express();
     this.port = process.env.PORT;
-    this.userEndpoitPath = '/api/v1/users';
-    this.authEndpointPath = '/api/v1/auth';
+    this.pathsEndpoints = {
+      users:          '/api/v1/users',
+      authorization:  '/api/v1/auth',
+      categories:     '/api/v1/cafe/categories',
+      products:       '/api/v1/cafe/products',
+      searchDoc:      '/api/v1/search'
+    }
     this.conectarDB(process.env.ENVIROMENT_NOW);
     this.middlewares();
     this.routes();
@@ -27,8 +35,11 @@ class Server {
     this.app.use(express.static('./public'))  
   }
   routes() {
-    this.app.use(this.authEndpointPath, authRouter);
-    this.app.use(this.userEndpoitPath, userRouter);
+    this.app.use(this.pathsEndpoints.users, authRouter);
+    this.app.use(this.pathsEndpoints.searchDoc, searchRouter);
+    this.app.use(this.pathsEndpoints.authorization, userRouter);
+    this.app.use(this.pathsEndpoints.categories, categoriesRouter);
+    this.app.use(this.pathsEndpoints.products, productsRouter);
 
     this.app.all('*',(req,res,next) => {
       next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

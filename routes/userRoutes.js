@@ -25,5 +25,6 @@ router.route('/:id')
   .put(check('id', 'No es un ID valido').isMongoId(), validarCampos ,editUser)
 
 
+
 module.exports = router;
 
