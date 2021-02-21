@@ -1,12 +1,13 @@
 const express = require('express');
 const cors = require('cors')
 const AppError = require('../utils/appError');
-
+const fileUpload = require('express-fileupload');
 const userRouter = require('../routes/userRoutes');
 const authRouter = require('../routes/authRoutes');
 const categoriesRouter = require('../routes/categoryRoutes');
 const productsRouter = require('../routes/productRoutes');
 const searchRouter = require('../routes/searchRoute');
+const uploadRouter = require('../routes/uploadsRoutes');
 
 const { dbConnection } = require('../database/config');
 
@@ -20,7 +21,8 @@ class Server {
       authorization:  '/api/v1/auth',
       categories:     '/api/v1/cafe/categories',
       products:       '/api/v1/cafe/products',
-      searchDoc:      '/api/v1/search'
+      searchDoc:      '/api/v1/search',
+      uploadFile:     '/api/v1/uploads'
     }
     this.conectarDB(process.env.ENVIROMENT_NOW);
     this.middlewares();
@@ -33,6 +35,11 @@ class Server {
     this.app.use(express.json())
 
     this.app.use(express.static('./public'))  
+    this.app.use(fileUpload({
+        useTempFiles : true,
+        tempFileDir : '/tmp/',
+        createParentPath: true
+    }));
   }
   routes() {
     console.log('patata')
@@ -41,6 +48,7 @@ class Server {
     this.app.use(this.pathsEndpoints.categories, categoriesRouter);
     this.app.use(this.pathsEndpoints.products, productsRouter);
     this.app.use(this.pathsEndpoints.searchDoc, searchRouter);
+    this.app.use(this.pathsEndpoints.uploadFile, uploadRouter)
 
     this.app.all('*',(req,res,next) => {
       next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

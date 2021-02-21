@@ -67,3 +67,11 @@ exports.checkParamCategory = async (req, res , next) => {
   next();
 
 }
+//Validate allowed colections
+exports.allowedColections = ( colection = '', colections = []) => {
+  const isIncluded = colections.includes(colection);
+  if(!isIncluded) {
+    throw new AppError(`The colection ${colection} is not allowed`)
+  }
+  return true;
+}
