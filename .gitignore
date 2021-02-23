@@ -1,6 +1,6 @@
 /node_modules
 
-/config/.exam.env
+/config/config.env
 
 /uploads/products/**.*
 /uploads/users/**.*
